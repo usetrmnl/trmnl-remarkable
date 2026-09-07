@@ -36,9 +36,16 @@ firmware, and stops if they don't match.
 | Device | Status |
 |---|---|
 | reMarkable Paper Pro (`Ferrari`, ARM64) | **Supported.** Developed and tested on this device |
-| reMarkable 2 (ARM32) | **Supported since 2.3.0.** Installs, but not yet confirmed on hardware. Testers wanted |
+| reMarkable 2 (ARM32) | **Supported since 2.3.0.** Confirmed on hardware in daily use (OS 3.27.3.0); see the note below |
 | reMarkable 1 (ARM32) | **Supported since 2.3.0.** Installs, but not yet confirmed on hardware. Testers wanted |
 | Any other reMarkable model | Not supported |
+
+A community tester runs the app daily on a reMarkable 2 (OS 3.27.3.0), where it
+fetches from the Device API and renders real dashboards on the greyscale panel.
+That covers install and everyday refreshing only. The rest of the hardware
+checklist in [docs/compatibility.md](docs/compatibility.md) — offline restart
+from cache, suspend and resume, reboot, uninstall, and stock recovery — is still
+unconfirmed on this model, as is the reMarkable 1 entirely.
 
 The release carries a complete build for each architecture. The installer
 identifies the tablet first and sends only the half that matches it.

@@ -3,7 +3,7 @@
 | Component | Status |
 |---|---|
 | reMarkable Paper Pro (`reMarkable Ferrari`, aarch64) | Supported; developed and validated on this device |
-| reMarkable 2 (`reMarkable 2.0`, armv7l) | Supported; not yet exercised on hardware |
+| reMarkable 2 (`reMarkable 2.0`, armv7l) | Supported; install and everyday Device API refreshing exercised on hardware (OS 3.27.3.0). The full checklist below is not complete for this model |
 | reMarkable 1 (`reMarkable 1.0` or `reMarkable Prototype 1`, armv7l) | Supported; not yet exercised on hardware |
 | Other reMarkable models (Paper Pro Move, Paper Pure) | Blocked |
 | reMarkable OS 3.27.x | Supported; 3.27.3.0 exercised on Paper Pro hardware |
