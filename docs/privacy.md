@@ -25,9 +25,11 @@ ID/MAC, app version, model name, battery voltage, and (if later implemented by
 the platform) signal strength. The server returns image URLs and refresh
 instructions. Firmware/reset instructions are ignored.
 
-Production API and image traffic requires HTTPS. The only HTTP exception is a
-loopback development mock on the tablet. Credential-bearing redirects cannot
-change origin or protocol.
+Production API and image traffic requires HTTPS. HTTP is accepted only for
+hosts that cannot leave the local network: a loopback development mock on the
+tablet, or a private-range IP literal (RFC 1918, RFC 4193, or link-local) such
+as a self-hosted server on the same LAN. Hostnames are never resolved to reach
+that exception. Credential-bearing redirects cannot change origin or protocol.
 
 ## Update check
 

@@ -109,7 +109,9 @@ Longer instructions: [install guide](docs/install.md).
 Use these steps to connect the app to the hosted TRMNL cloud. If you run a fully
 self-hosted BYOS server, the hosted BYOD license and TRMNL Device API key are not
 required. Choose the custom server option and enter its HTTPS origin and device
-identity instead. Plain HTTP is only accepted for a loopback mock on the tablet.
+identity instead. Plain HTTP is only accepted for a loopback mock on the tablet
+or a private LAN address entered as an IP literal, such as
+`http://192.168.1.4:8765`.
 
 ### 1. Obtain and claim a BYOD license
 

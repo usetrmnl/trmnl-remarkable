@@ -260,7 +260,10 @@ func ParseHexColor(value string) (r, g, b uint8, err error) {
 
 // ValidateRemoteURL applies the transport policy shared by Device API and
 // image requests. Production traffic must use HTTPS; plain HTTP is limited to
-// a loopback mock running on the tablet itself.
+// hosts that cannot leave the local network: a loopback mock on the tablet
+// itself, or a private-range IP literal such as a self-hosted server on the
+// same LAN. Names are never resolved, so an HTTP hostname stays rejected even
+// when it happens to point at a LAN address.
 func ValidateRemoteURL(value string) error {
 	u, err := url.Parse(strings.TrimSpace(value))
 	if err != nil || !u.IsAbs() || u.Hostname() == "" {
@@ -272,12 +275,26 @@ func ValidateRemoteURL(value string) error {
 	if strings.EqualFold(u.Scheme, "https") {
 		return nil
 	}
-	ip := net.ParseIP(u.Hostname())
-	isLoopback := u.Scheme == "http" && (strings.EqualFold(u.Hostname(), "localhost") || ip != nil && ip.IsLoopback())
-	if !isLoopback {
-		return errors.New("HTTPS is required; HTTP is allowed only for a loopback mock on this device")
+	if !strings.EqualFold(u.Scheme, "http") {
+		return errors.New("HTTPS is required; HTTP is allowed only for loopback or a private LAN address")
 	}
-	return nil
+	if strings.EqualFold(u.Hostname(), "localhost") {
+		return nil
+	}
+	if ip := net.ParseIP(u.Hostname()); ip != nil && isLocalIP(ip) {
+		return nil
+	}
+	return errors.New("HTTPS is required; HTTP is allowed only for loopback or a private LAN address")
+}
+
+// isLocalIP reports whether ip is reachable only from this device or the
+// local network: loopback, RFC 1918 and RFC 4193 private ranges, and
+// link-local addresses. IPv4-mapped IPv6 forms are judged as their IPv4 self.
+func isLocalIP(ip net.IP) bool {
+	if v4 := ip.To4(); v4 != nil {
+		ip = v4
+	}
+	return ip.IsLoopback() || ip.IsPrivate() || ip.IsLinkLocalUnicast()
 }
 
 func Load(path string) (Config, error) {
