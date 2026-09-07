@@ -111,13 +111,21 @@ func TestRejectsBadURL(t *testing.T) {
 
 func TestRejectsInsecureRemoteURL(t *testing.T) {
 	c := Defaults()
-	c.BaseURL = "http://192.168.1.20:3000"
+	c.BaseURL = "http://203.0.113.10:3000"
 	if err := c.Normalize(); err == nil {
-		t.Fatal("expected remote HTTP URL to be rejected")
+		t.Fatal("expected public HTTP URL to be rejected")
+	}
+	c.BaseURL = "http://dashboard.lan:8765"
+	if err := c.Normalize(); err == nil {
+		t.Fatal("expected HTTP hostname to be rejected; names are not resolved")
 	}
 	c.BaseURL = "http://127.0.0.1:9988"
 	if err := c.Normalize(); err != nil {
 		t.Fatalf("loopback mock URL should remain available: %v", err)
+	}
+	c.BaseURL = "http://192.168.1.4:8765"
+	if err := c.Normalize(); err != nil {
+		t.Fatalf("private LAN URL should be accepted: %v", err)
 	}
 }
 
@@ -136,18 +144,26 @@ func TestRejectsUnsafeServerURLFeatures(t *testing.T) {
 	}
 }
 
-func TestValidateRemoteURLAllowsHTTPSImagesAndLoopbackMock(t *testing.T) {
+func TestValidateRemoteURLAllowsHTTPSImagesAndLocalNetworkHosts(t *testing.T) {
 	for _, raw := range []string{
 		"https://cdn.example.test/screens/a.png?token=opaque",
 		"http://127.0.0.1:9988/image/test.png",
 		"http://[::1]:9988/image/test.png",
+		"http://192.168.1.4:8765/image/test.png",
+		"http://10.0.0.5/image.png",
+		"http://172.16.3.9:3000/image.png",
+		"http://169.254.7.7/image.png",
+		"http://[fd00::1]:8765/image.png",
 	} {
 		if err := ValidateRemoteURL(raw); err != nil {
 			t.Fatalf("ValidateRemoteURL(%q): %v", raw, err)
 		}
 	}
 	for _, raw := range []string{
-		"http://192.168.1.20/image.png",
+		"http://203.0.113.10/image.png",
+		"http://8.8.8.8/image.png",
+		"http://[2001:db8::1]/image.png",
+		"http://nas.lan/image.png",
 		"ftp://example.test/image.png",
 		"//example.test/image.png",
 	} {
